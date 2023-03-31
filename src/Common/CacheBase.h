@@ -214,13 +214,19 @@ public:
     void setMaxCount(size_t max_count)
     {
         std::lock_guard lock(mutex);
-        return cache_policy->setMaxCount(max_count, lock);
+        cache_policy->setMaxCount(max_count, lock);
     }
 
     void setMaxSize(size_t max_size_in_bytes)
     {
         std::lock_guard lock(mutex);
-        return cache_policy->setMaxSize(max_size_in_bytes, lock);
+        cache_policy->setMaxSize(max_size_in_bytes, lock);
+    }
+
+    void setQuotaForUser(const String & user_name, ICachePolicyUserQuota::Resource resource, size_t quota)
+    {
+        std::lock_guard lock(mutex);
+        cache_policy->setQuotaForUser(user_name, resource, quota, lock);
     }
 
     virtual ~CacheBase() = default;
