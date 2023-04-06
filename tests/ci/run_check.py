@@ -9,6 +9,7 @@ from github import Github
 from commit_status_helper import (
     format_description,
     get_commit,
+    post_commit_status,
     post_labels,
     remove_labels,
     set_mergeable_check,
@@ -263,26 +264,19 @@ def main():
             f"{GITHUB_SERVER_URL}/{GITHUB_REPOSITORY}/"
             "blob/master/.github/PULL_REQUEST_TEMPLATE.md?plain=1"
         )
-        commit.create_status(
-            context=NAME,
-            description=format_description(description_error),
-            state="failure",
-            target_url=url,
+        post_commit_status(
+            gh, pr_info.sha, NAME, format_description(description_error), "failure", url
         )
         sys.exit(1)
 
     url = GITHUB_RUN_URL
     if not can_run:
         print("::notice ::Cannot run")
-        commit.create_status(
-            context=NAME, description=description, state=labels_state, target_url=url
-        )
+        post_commit_status(gh, pr_info.sha, NAME, description, labels_state, url)
         sys.exit(1)
     else:
         print("::notice ::Can run")
-        commit.create_status(
-            context=NAME, description=description, state="pending", target_url=url
-        )
+        post_commit_status(gh, pr_info.sha, NAME, description, "pending", url)
 
 
 if __name__ == "__main__":
