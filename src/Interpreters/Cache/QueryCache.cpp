@@ -323,7 +323,7 @@ QueryCache::Reader::Reader(Cache & cache_, const Key & key, const std::lock_guar
         pipe = Pipe(std::make_shared<SourceFromChunks>(entry->key.header, entry->mapped));
     else
     {
-        auto decompressed_chunks = std::make_shared<Chunks>();
+        Chunks decompressed_chunks;
         const Chunks & compressed_chunks = *entry->mapped;
         for (const auto & compressed_chunk : compressed_chunks)
         {
@@ -335,10 +335,29 @@ QueryCache::Reader::Reader(Cache & cache_, const Key & key, const std::lock_guar
                 decompressed_columns.push_back(column);
             }
             Chunk decompressed_chunk(decompressed_columns, compressed_chunk.getNumRows());
-            decompressed_chunks->push_back(std::move(decompressed_chunk));
+            decompressed_chunks.push_back(std::move(decompressed_chunk));
         }
 
-        pipe = Pipe(std::make_shared<SourceFromChunks>(entry->key.header, decompressed_chunks));
+        /// pipe = Pipe(std::make_shared<SourceFromChunks>(entry->key.header, std::move(decompressed_chunks)));
+
+        /// auto totals = std::make_shared<Chunks>();
+        Chunks totals;
+        for (const auto & c : decompressed_chunks)
+            totals.push_back(c.clone());
+
+        /// auto extremes = std::make_shared<Chunks>();
+        Chunks extremes;
+        for (const auto & c : decompressed_chunks)
+            extremes.push_back(c.clone());
+
+        auto source_from_chunks = std::make_shared<SourceFromChunks>(entry->key.header, std::move(decompressed_chunks), std::move(totals), std::move(extremes));
+        auto out_it = source_from_chunks->getOutputs().begin();
+        auto * out1 = &*out_it;
+        out_it++;
+        auto * out2 = &*out_it;
+        out_it++;
+        auto * out3 = &*out_it;
+        pipe = Pipe(source_from_chunks, out1, out2, out3);
     }
 
     LOG_TRACE(&Poco::Logger::get("QueryCache"), "Entry found for query {}", key.queryStringFromAst());

@@ -18,7 +18,7 @@ protected:
     bool has_input = false;
     bool finished = false;
     bool got_exception = false;
-    Port::Data current_chunk;
+    Port::Data port_data;
 
     std::shared_ptr<const StorageLimitsList> storage_limits;
 

@@ -37,7 +37,7 @@ ISource::Status ISource::prepare()
     if (!has_input)
         return Status::Ready;
 
-    output.pushData(std::move(current_chunk));
+    output.pushData(std::move(port_data));
     has_input = false;
 
     if (isCancelled())
@@ -93,12 +93,12 @@ void ISource::work()
 
         if (auto chunk = tryGenerate())
         {
-            current_chunk.chunk = std::move(*chunk);
-            if (current_chunk.chunk)
+            port_data.chunk = std::move(*chunk);
+            if (port_data.chunk)
             {
                 has_input = true;
                 if (auto_progress && !read_progress_was_set)
-                    progress(current_chunk.chunk.getNumRows(), current_chunk.chunk.bytes());
+                    progress(port_data.chunk.getNumRows(), port_data.chunk.bytes());
             }
         }
         else
@@ -124,7 +124,7 @@ std::optional<Chunk> ISource::tryGenerate()
 {
     auto chunk = generate();
     if (!chunk)
-        return {};
+        return std::nullopt;
 
     return chunk;
 }

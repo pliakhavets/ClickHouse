@@ -106,6 +106,20 @@ Pipe::Pipe() : processors(std::make_shared<Processors>())
 {
 }
 
+Pipe::Pipe(ProcessorPtr source)
+    : processors(std::make_shared<Processors>())
+{
+    checkSource(*source);
+
+    if (collected_processors)
+        collected_processors->emplace_back(source);
+
+    output_ports.push_back(&source->getOutputs().front());
+    header = output_ports.front()->getHeader();
+    processors->emplace_back(std::move(source));
+    max_parallel_streams = 1;
+}
+
 Pipe::Pipe(ProcessorPtr source, OutputPort * output, OutputPort * totals, OutputPort * extremes)
     : processors(std::make_shared<Processors>())
 {
@@ -158,20 +172,6 @@ Pipe::Pipe(ProcessorPtr source, OutputPort * output, OutputPort * totals, Output
     totals_port = totals;
     extremes_port = extremes;
     output_ports.push_back(output);
-    processors->emplace_back(std::move(source));
-    max_parallel_streams = 1;
-}
-
-Pipe::Pipe(ProcessorPtr source)
-    : processors(std::make_shared<Processors>())
-{
-    checkSource(*source);
-
-    if (collected_processors)
-        collected_processors->emplace_back(source);
-
-    output_ports.push_back(&source->getOutputs().front());
-    header = output_ports.front()->getHeader();
     processors->emplace_back(std::move(source));
     max_parallel_streams = 1;
 }
