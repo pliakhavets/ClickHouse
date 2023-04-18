@@ -414,6 +414,12 @@ CHECK_DESCRIPTIONS = [
         lambda x: x.startswith("AST fuzzer"),
     ),
     CheckDescription(
+        "Bugfix validate check",
+        "Checks that either a new test (functional or integration) or there "
+        "some changed tests that fail with the binary built on master branch",
+        lambda x: x == "Bugfix validate check",
+    ),
+    CheckDescription(
         "ClickHouse build check",
         "Builds ClickHouse in various configurations for use in further steps. "
         "You have to fix the builds that fail. Build logs often has enough "
@@ -530,5 +536,11 @@ CHECK_DESCRIPTIONS = [
         "upgrade it to the version from the PR. It checks if the new server can "
         "successfully startup without any errors, crashes or sanitizer asserts.",
         lambda x: x.startswith("Upgrade check ("),
+    ),
+    CheckDescription(
+        "Falback for unknown",
+        "There's no description for the check yet, please add it to "
+        "tests/ci/ci_config.py:CHECK_DESCRIPTIONS",
+        lambda x: True,
     ),
 ]
