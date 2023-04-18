@@ -136,6 +136,7 @@ def set_status_comment(commit: Commit, pr_info: PRInfo) -> None:
         for cd in CHECK_DESCRIPTIONS:
             if cd.match_func(status.context):
                 description = cd.description
+                break
 
         if status.state == "success":
             state = "🟢 "
