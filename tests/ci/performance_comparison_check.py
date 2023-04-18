@@ -117,7 +117,7 @@ if __name__ == "__main__":
         message = "Skipped, not labeled with 'pr-performance'"
         report_url = GITHUB_RUN_URL
         post_commit_status(
-            gh, pr_info.sha, check_name_with_group, message, status, report_url
+            commit, status, report_url, message, check_name_with_group, pr_info
         )
         sys.exit(0)
 
@@ -265,7 +265,7 @@ if __name__ == "__main__":
         report_url = uploaded["report.html"]
 
     post_commit_status(
-        gh, pr_info.sha, check_name_with_group, message, status, report_url
+        commit, status, report_url, message, check_name_with_group, pr_info
     )
 
     if status == "error":

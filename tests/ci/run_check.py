@@ -265,18 +265,18 @@ def main():
             "blob/master/.github/PULL_REQUEST_TEMPLATE.md?plain=1"
         )
         post_commit_status(
-            gh, pr_info.sha, NAME, format_description(description_error), "failure", url
+            commit, "failure", url, format_description(description_error), NAME, pr_info
         )
         sys.exit(1)
 
     url = GITHUB_RUN_URL
     if not can_run:
         print("::notice ::Cannot run")
-        post_commit_status(gh, pr_info.sha, NAME, description, labels_state, url)
+        post_commit_status(commit, labels_state, url, description, NAME, pr_info)
         sys.exit(1)
     else:
         print("::notice ::Can run")
-        post_commit_status(gh, pr_info.sha, NAME, description, "pending", url)
+        post_commit_status(commit, "pending", url, description, NAME, pr_info)
 
 
 if __name__ == "__main__":
