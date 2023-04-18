@@ -17,7 +17,6 @@ from commit_status_helper import (
 )
 from docker_pull_helper import get_image_with_version
 from env_helper import (
-    GITHUB_REPOSITORY,
     GITHUB_RUN_URL,
     REPORTS_PATH,
     TEMP_PATH,
